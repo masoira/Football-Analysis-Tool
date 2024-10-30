@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Shot Analysis</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to CSS -->
+</head>
+
+<body>
+
+<h1>Football Shot Analysis</h1>
+<p>Click anywhere on the pitch to record a shot.</p>
+
+<!-- Team Selector -->
+<div id="team-selector">
+    <label for="teamOutcome">Select Team:</label>
+    <select id="teamOutcome">
+        <option value="team">Your Team</option>
+        <option value="opponent">Opponent</option>
+    </select>
+</div>
+
+<!-- Shot Type Selector -->
+<div id="shot-type">
+    <label for="shotOutcome">Select Shot Outcome:</label>
+    <select id="shotOutcome">
+        <option value="on-target">On Target</option>
+        <option value="blocked">Blocked</option>
+        <option value="off-target">Off Target</option>
+    </select>
+</div>
+
+<!-- Action Type Selector -->
+<div id="action-type">
+    <label for="actionOutcome">Select Action:</label>
+    <select id="actionOutcome">
+        <option value="none">None</option>
+        <option value="assist">Assist</option>
+        <option value="dribble">Dribble</option>
+    </select>
+</div>
+
+<div id="football-pitch" onclick="recordAction(event)"></div>
+<button id="finish-button" onclick="generateImage()">Finish</button>
+<a id="download-link" href="#" download="shot_map.png">Download Shot Map</a>
+<button id="download-json" onclick="downloadJSON()">Download Shot Data as JSON</button> <!-- New button for JSON download -->
+
+<canvas id="shot-map-canvas" width="800" height="500" style="display:none;"></canvas>
+
+<script src="app.js"></script> <!-- Link to JavaScript -->
+</body>
+</html>
