@@ -34,6 +34,7 @@ function recordAction(event) {
     if (currentAction === null) {
         let newAction = {
             type: "shot",
+            header: false,  // TODO: Add button to be able to set this to true
             x: x,
             y: y,
             shot_type: shotType,
