@@ -1,3 +1,5 @@
+import { calculateXG } from './expected_goals.js';
+
 let actions = [];
 let currentAction = null;
 
@@ -37,8 +39,12 @@ function recordAction(event) {
             shot_type: shotType,
             team: teamType
         };
+        // calculate xG based on shot info. Recalculated and overwritten if assist/dribble info is added.
+        newAction.xG = calculateXG(newAction);
         actions.push(newAction);
         displayAction(newAction);
+        // if assist or dribble was selected, after placing shot, the user places assist or dribble location.
+        // When currentAction is set, the program know the next click is associated with the previously assigned shot.
         if (actionType !== 'none') {
             currentAction = actionType;
         }
@@ -49,6 +55,7 @@ function recordAction(event) {
                 y: y,
                 type: currentAction
             };
+            actions[actions.length-1].xG = calculateXG(actions[actions.length-1]);
             displayAction(actions[actions.length-1]);
         }
         currentAction = null;
@@ -84,7 +91,16 @@ function createShotMarker(x, y, shotType, teamType) {
         marker.style.lineHeight = '20px';
     }
 
+    // xG text above the marker
+    const xgText = document.createElement('div');
+    xgText.innerHTML = actions[actions.length-1].xG.toFixed(2);
+    xgText.style.position = 'absolute';
+    xgText.style.left = '0px';
+    xgText.style.top = '-15px';
+    xgText.style.color = (teamType === 'team') ? 'red' : '#1E90FF';
+
     const pitch = document.getElementById('football-pitch');
+    marker.appendChild(xgText);
     pitch.appendChild(marker);
 }
 
@@ -177,3 +193,7 @@ function generateImage() {
         };
     };
 }
+
+document.getElementById('football-pitch').addEventListener('click', recordAction);
+document.getElementById('finish-button').addEventListener('click', generateImage);
+document.getElementById('download-json').addEventListener('click', downloadJSON);
