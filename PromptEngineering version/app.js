@@ -1,7 +1,26 @@
-let shots = [];
-let arrows = [];
+import { calculateXG } from './expected_goals.js';
+
+let actions = [];
 let currentAction = null;
 
+
+// displays a single action (possible including both dribble/assist and shot)
+function displayAction(action) {
+    if (action.type === "shot") {
+        createShotMarker(action.x, action.y, action.shot_type, action.team);
+    }
+    if (action.assist) {
+        drawArrow(action.x, action.y, action.assist.x, action.assist.y, action.assist.type, action.team);
+    }
+}
+
+// function to start fresh and loop over all action in an array to display them
+function displayAllActions(actions) {
+    clearPitch();
+    actions.forEach(action => displayAction(action));
+}
+
+// registers click, stores it to 'actions' array and displays the new shot/assist/dribble
 function recordAction(event) {
     const pitch = document.getElementById('football-pitch');
     const rect = pitch.getBoundingClientRect();
@@ -13,20 +32,39 @@ function recordAction(event) {
     const teamType = document.getElementById('teamOutcome').value;
 
     if (currentAction === null) {
-        recordShot(x, y, shotType, teamType);
+        let newAction = {
+            type: "shot",
+            header: false,  // TODO: Add button to be able to set this to true
+            x: x,
+            y: y,
+            shot_type: shotType,
+            team: teamType
+        };
+        // calculate xG based on shot info. Recalculated and overwritten if assist/dribble info is added.
+        newAction.xG = calculateXG(newAction);
+        actions.push(newAction);
+        displayAction(newAction);
+        // if assist or dribble was selected, after placing shot, the user places assist or dribble location.
+        // When currentAction is set, the program know the next click is associated with the previously assigned shot.
         if (actionType !== 'none') {
             currentAction = actionType;
         }
     } else {
         if (actionType !== 'none') {
-            drawArrow(shots[shots.length - 1].x, shots[shots.length - 1].y, x, y, currentAction, teamType);
-            arrows.push({ startX: shots[shots.length - 1].x, startY: shots[shots.length - 1].y, endX: x, endY: y, type: currentAction, team: teamType });
+            actions[actions.length-1].assist = {
+                x: x,
+                y: y,
+                type: currentAction
+            };
+            actions[actions.length-1].xG = calculateXG(actions[actions.length-1]);
+            displayAction(actions[actions.length-1]);
         }
         currentAction = null;
     }
 }
 
-function recordShot(x, y, shotType, teamType) {
+// draws a single shot marker
+function createShotMarker(x, y, shotType, teamType) {
     const marker = document.createElement('div');
     marker.className = 'shot-marker';
     marker.style.left = `${x - 10}px`;
@@ -54,12 +92,20 @@ function recordShot(x, y, shotType, teamType) {
         marker.style.lineHeight = '20px';
     }
 
-    const pitch = document.getElementById('football-pitch');
-    pitch.appendChild(marker);
+    // xG text above the marker
+    const xgText = document.createElement('div');
+    xgText.innerHTML = actions[actions.length-1].xG.toFixed(2);
+    xgText.style.position = 'absolute';
+    xgText.style.left = '0px';
+    xgText.style.top = '-15px';
+    xgText.style.color = (teamType === 'team') ? 'red' : '#1E90FF';
 
-    shots.push({ x: x, y: y, type: shotType, team: teamType });
+    const pitch = document.getElementById('football-pitch');
+    marker.appendChild(xgText);
+    pitch.appendChild(marker);
 }
 
+// draws a single marker for assist or dribble
 function drawArrow(startX, startY, endX, endY, actionType, teamType) {
     const pitch = document.getElementById('football-pitch');
     const arrow = document.createElement('div');
@@ -85,9 +131,10 @@ function drawArrow(startX, startY, endX, endY, actionType, teamType) {
     arrow.style.transformOrigin = '0 0';
     pitch.appendChild(arrow);
 }
+
 // Function to download shot data as a JSON file
 function downloadJSON() {
-    const dataStr = JSON.stringify(shots, null, 2); // Convert shots array to JSON string
+    const dataStr = JSON.stringify(actions, null, 2); // Convert shots array to JSON string
     const blob = new Blob([dataStr], { type: 'application/json' }); // Create a blob
     const url = URL.createObjectURL(blob); // Create a URL for the blob
 
@@ -105,34 +152,38 @@ function generateImage() {
     const ctx = canvas.getContext('2d');
 
     const img = new Image();
-    img.src = 'football_pitch.jpg'; // Make sure this is the correct path
+    img.src = 'football_pitch.jpg';
     img.onload = function() {
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-        shots.forEach((shot) => {
-            const color = (shot.team === 'team') ? 'red' : '#1E90FF';
+        actions.forEach((action) => {
+            const color = (action.team === 'team') ? 'red' : '#1E90FF';
 
-            if (shot.type === 'on-target') {
-                ctx.beginPath();
-                ctx.arc(shot.x, shot.y, 7, 0, Math.PI * 2);
-                ctx.fillStyle = color;
-                ctx.fill();
-            } else if (shot.type === 'blocked') {
-                ctx.fillStyle = color;
-                ctx.fillRect(shot.x - 7, shot.y - 7, 15, 15);
-            } else if (shot.type === 'off-target') {
-                ctx.fillStyle = color;
-                ctx.fillText('X', shot.x - 10, shot.y + 5);
+            // Draw shot marker
+            if (action.type === 'shot') {
+                if (action.shot_type === 'on-target') {
+                    ctx.beginPath();
+                    ctx.arc(action.x, action.y, 7, 0, Math.PI * 2);
+                    ctx.fillStyle = color;
+                    ctx.fill();
+                } else if (action.shot_type === 'blocked') {
+                    ctx.fillStyle = color;
+                    ctx.fillRect(action.x - 7, action.y - 7, 15, 15);
+                } else if (action.shot_type === 'off-target') {
+                    ctx.fillStyle = color;
+                    ctx.fillText('X', action.x - 10, action.y + 5);
+                }
             }
-        });
 
-        arrows.forEach((arrow) => {
-            ctx.beginPath();
-            ctx.moveTo(arrow.startX, arrow.startY);
-            ctx.lineTo(arrow.endX, arrow.endY);
-            ctx.strokeStyle = (arrow.team === 'team') ? 'red' : '#1E90FF';
-            ctx.lineWidth = 2;
-            ctx.stroke();
+            // Draw assist/dribble arrow
+            if (action.assist) {
+                ctx.beginPath();
+                ctx.moveTo(action.x, action.y);
+                ctx.lineTo(action.assist.x, action.assist.y);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
         });
 
         const downloadLink = document.getElementById('download-link');
@@ -143,3 +194,7 @@ function generateImage() {
         };
     };
 }
+
+document.getElementById('football-pitch').addEventListener('click', recordAction);
+document.getElementById('finish-button').addEventListener('click', generateImage);
+document.getElementById('download-json').addEventListener('click', downloadJSON);

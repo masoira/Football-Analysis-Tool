@@ -1,0 +1,28 @@
+[
+  {
+    "type": "shot",
+    "x": 541,
+    "y": 104.0625,
+    "shot_type": "on-target",
+    "team": "team"
+  },
+  {
+    "type": "shot",
+    "x": 655,
+    "y": 213.0625,
+    "shot_type": "blocked",
+    "team": "team"
+  },
+  {
+    "type": "shot",
+    "x": 637,
+    "y": 292.0625,
+    "shot_type": "blocked",
+    "team": "team",
+    "assist": {
+      "x": 573,
+      "y": 329.0625,
+      "type": "dribble"
+    }
+  }
+]

@@ -41,13 +41,13 @@
     </select>
 </div>
 
-<div id="football-pitch" onclick="recordAction(event)"></div>
-<button id="finish-button" onclick="generateImage()">Finish</button>
+<div id="football-pitch"></div>
+<button id="finish-button">Finish</button>
 <a id="download-link" href="#" download="shot_map.png">Download Shot Map</a>
-<button id="download-json" onclick="downloadJSON()">Download Shot Data as JSON</button> <!-- New button for JSON download -->
+<button id="download-json">Download Shot Data as JSON</button>
 
 <canvas id="shot-map-canvas" width="800" height="500" style="display:none;"></canvas>
 
-<script src="app.js"></script> <!-- Link to JavaScript -->
+<script type="module" src="app.js"></script> <!-- Link to JavaScript -->
 </body>
 </html>
