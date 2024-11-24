@@ -1,4 +1,9 @@
-import { calculateXG } from './expected_goals.js';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
+
+import { calculateXG } from './utils/expected_goals.js';
+import { getStatsFromActions } from './utils/stats.js';
 
 let actions = [];
 let currentAction = null;
@@ -196,6 +201,58 @@ function generateImage() {
     };
 }
 
+
+// Renders a sortable table using TanStack Table. Converts data array [{Statistic, Your Team, Opponent},...] into HTML table structure
+function StatsTable({ data }) {
+    const columns = [
+      { accessorKey: 'Statistic' },
+      { accessorKey: 'Your Team' },
+      { accessorKey: 'Opponent' }
+    ];
+  
+    const table = useReactTable({
+      data,
+      columns,
+      getCoreRowModel: getCoreRowModel(),
+    });
+  
+    return (
+      <table>
+        <thead><tr>
+          {table.getAllColumns().map(column => (
+            <th key={column.id}>{column.id}</th>
+          ))}
+        </tr></thead>
+        <tbody>
+          {table.getRowModel().rows.map(row => (
+            <tr key={row.id}>
+              {row.getVisibleCells().map(cell => (
+                <td key={cell.id}>{cell.getValue()}</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  }
+  
+// TODO: Style table using one of:
+// - @tanstack/react-table-plugins (official styling plugin)
+// - tailwindcss (utility classes, popular with React)
+// - shadcn/ui table component (pre-styled, modern look)
+
+  function showStats() {
+    console.log('Starting showStats');
+    const stats = getStatsFromActions(actions);
+    const container = document.getElementById('stats-root');
+    
+    if (!container._root) {
+        container._root = createRoot(container);
+    }
+    container._root.render(<StatsTable data={stats} />);
+}
+
 document.getElementById('football-pitch').addEventListener('click', recordAction);
 document.getElementById('finish-button').addEventListener('click', generateImage);
 document.getElementById('download-json').addEventListener('click', downloadJSON);
+document.getElementById('show-stats').addEventListener('click', showStats);

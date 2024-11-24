@@ -2,7 +2,6 @@
 
 ### Requirements
 - Install Node.js and npm (https://nodejs.org/)
-- VS Code Live Server extension (or similar) to run the frontend
 
 ### Frontend Setup
 1. cd into frontend folder
@@ -10,6 +9,9 @@
 
 2. Install dependencies 
   `npm install`
+
+3. Start the development server
+  `npm run dev`
 
 Note: Always run npm commands from the frontend folder where package.json is located (not from the root of the repo).
 

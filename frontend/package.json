@@ -7,7 +7,7 @@
     "example": "examples"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite"
   },
   "repository": {
     "type": "git",
@@ -20,7 +20,14 @@
   },
   "homepage": "https://github.com/masoira/Football-Analysis-Tool#readme",
   "dependencies": {
-    "datatables.net": "^2.1.8",
-    "datatables.net-dt": "^2.1.8"
+    "@tanstack/react-table": "^8.20.5",
+    "jquery": "^3.7.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/jquery": "^3.5.32",
+    "@vitejs/plugin-react": "^4.3.3",
+    "vite": "^5.4.11"
   }
 }
