@@ -27,6 +27,7 @@ function recordAction(event) {
     const x = event.clientX - rect.left;
     const y = event.clientY - rect.top;
 
+    // TODO: Do blocked shots count towards expected goals? Currently they do.
     const actionType = document.getElementById('actionOutcome').value;
     const shotType = document.getElementById('shotOutcome').value;
     const teamType = document.getElementById('teamOutcome').value;
