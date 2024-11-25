@@ -5,6 +5,7 @@ import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-tabl
 import { calculateXG } from './utils/expected_goals.js';
 import { getStatsFromActions } from './utils/stats.js';
 
+let isHeader = false; // Default to "No", meaning not a header
 let actions = [];
 let currentAction = null;
 
@@ -40,7 +41,7 @@ function recordAction(event) {
     if (currentAction === null) {
         let newAction = {
             type: "shot",
-            header: false,  // TODO: Add button to be able to set this to true
+            header: isHeader,  // TODO: Add button to be able to set this to true
             x: x,
             y: y,
             shot_type: shotType,
@@ -256,3 +257,7 @@ document.getElementById('football-pitch').addEventListener('click', recordAction
 document.getElementById('finish-button').addEventListener('click', generateImage);
 document.getElementById('download-json').addEventListener('click', downloadJSON);
 document.getElementById('show-stats').addEventListener('click', showStats);
+// Add an event listener to update isHeader based on dropdown selection
+document.getElementById('isHeader').addEventListener('change', function(event) {
+    isHeader = event.target.value === 'header';  // Set isHeader to true if 'Yes' is selected, false otherwise
+});
