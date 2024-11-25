@@ -1,0 +1,33 @@
+{
+  "name": "football-analysis-tool",
+  "version": "1.0.0",
+  "description": "Tool to store shot information and calculate match statistics.",
+  "main": "app.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "dev": "vite"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/masoira/Football-Analysis-Tool.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/masoira/Football-Analysis-Tool/issues"
+  },
+  "homepage": "https://github.com/masoira/Football-Analysis-Tool#readme",
+  "dependencies": {
+    "@tanstack/react-table": "^8.20.5",
+    "jquery": "^3.7.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/jquery": "^3.5.32",
+    "@vitejs/plugin-react": "^4.3.3",
+    "vite": "^5.4.11"
+  }
+}
