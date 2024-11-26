@@ -15,6 +15,9 @@
 
 Note: Always run npm commands from the frontend folder where package.json is located (not from the root of the repo).
 
+4. Testing
+  `npm run test`
+
 
 ## Plan:
 
