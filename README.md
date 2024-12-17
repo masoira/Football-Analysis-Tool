@@ -22,10 +22,9 @@ Note: Always run npm commands from the frontend folder where package.json is loc
 ## Plan:
 
 #### short-term
-- Add a way to calculate total shots, assists, xG etc. for full match stats
-- Add a way (e.g. table) to view those statistics
 - Publish with Github Pages
 - Export and Import files
+- Undo previous action functionality
 
 #### long-term
 - Backend for user management and storage
