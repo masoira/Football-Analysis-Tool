@@ -1,6 +1,4 @@
-name: Frontend CI
-
-# Gets triggered on commits to main branch as well as all pull requests
+name: Frontend CI # Gets triggered on commits to main branch as well as all pull requests
 on:
   push:
     branches: ["main"]
@@ -13,40 +11,62 @@ permissions:
 
 jobs:
   build:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./frontend  # Since all our frontend code is there
-
+        working-directory: ./frontend # Since all our frontend code is there
     steps:
     - uses: actions/checkout@v4
-     
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: 22.x
         cache: 'npm'
         cache-dependency-path: ./frontend/package-lock.json
-
     # Clean install of dependencies
     - run: npm ci
-     
-    # Verify build and run tests
     - run: npm run build
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist
+        path: ./frontend/dist
+
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.x
+        cache: 'npm'
+        cache-dependency-path: ./frontend/package-lock.json
+    - run: npm ci
     - run: npm test
- 
+
+  deploy:
+    needs: [build, test]
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+    - name: Download build artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: dist
+        path: ./dist
     - name: Setup Pages
       uses: actions/configure-pages@v3
-
-    - name: Upload artifact
+    - name: Upload pages artifact
       uses: actions/upload-pages-artifact@v2
       with:
-        path: './dist'
-
+        path: ./dist
     - name: Deploy to GitHub Pages
-      if: github.ref == 'refs/heads/main'
       id: deployment
       uses: actions/deploy-pages@v2
