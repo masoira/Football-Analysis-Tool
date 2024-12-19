@@ -13,11 +13,18 @@ let currentAction = null;
 // displays a single action (possible including both dribble/assist and shot)
 function displayAction(action) {
     if (action.type === "shot") {
-        createShotMarker(action.x, action.y, action.shot_type, action.team);
+        createShotMarker(action.x, action.y, action.shot_type, action.team, action.xG);
     }
     if (action.assist) {
         drawArrow(action.x, action.y, action.assist.x, action.assist.y, action.assist.type, action.team);
     }
+}
+
+// clears all shot markers from the pitch
+function clearPitch() {
+    const pitch = document.getElementById('football-pitch');
+    const markers = pitch.getElementsByClassName('shot-marker');
+    Array.from(markers).forEach(marker => marker.remove());
 }
 
 // function to start fresh and loop over all action in an array to display them
@@ -70,14 +77,23 @@ function recordAction(event) {
     }
 }
 
+// undoes the previous action
+function undoAction() {
+    console.log('Starting undo operation - Current actions length:', actions.length);
+    if (actions.length > 0) {
+        actions.pop();
+        displayAllActions(actions);
+    }
+}
+
 // draws a single shot marker
-function createShotMarker(x, y, shotType, teamType) {
+function createShotMarker(x, y, shotType, teamType, xG) {
     const marker = document.createElement('div');
     marker.className = 'shot-marker';
     marker.style.left = `${x - 10}px`;
     marker.style.top = `${y - 10}px`;
 
-    let color = (teamType === 'team') ? 'red' : '#1E90FF';
+    let color = (teamType === 'team') ? 'var(--primary-dark)' : 'var(--accent-yellow)';
 
     if (shotType === 'on-target') {
         marker.style.width = '15px';
@@ -101,11 +117,11 @@ function createShotMarker(x, y, shotType, teamType) {
 
     // xG text above the marker
     const xgText = document.createElement('div');
-    xgText.innerHTML = actions[actions.length-1].xG.toFixed(2);
+    xgText.innerHTML = xG.toFixed(2);
     xgText.style.position = 'absolute';
     xgText.style.left = '0px';
     xgText.style.top = '-15px';
-    xgText.style.color = (teamType === 'team') ? 'red' : '#1E90FF';
+    xgText.style.color = (teamType === 'team') ? 'var(--primary-dark)' : 'var(--accent-yellow)';
 
     const pitch = document.getElementById('football-pitch');
     marker.appendChild(xgText);
@@ -125,7 +141,7 @@ function drawArrow(startX, startY, endX, endY, actionType, teamType) {
     arrow.style.width = `${length}px`;
     arrow.style.height = '2px';
 
-    let arrowColor = (teamType === 'team') ? 'red' : '#1E90FF';
+    let arrowColor = (teamType === 'team') ? 'var(--primary-dark)' : 'var(--accent-yellow)';
 
     if (actionType === 'assist') {
         arrow.style.backgroundColor = arrowColor;
@@ -159,12 +175,12 @@ function generateImage() {
     const ctx = canvas.getContext('2d');
 
     const img = new Image();
-    img.src = 'football_pitch.jpg';
+    img.src = '/Football-Analysis-Tool/public/football_pitch.jpg';
     img.onload = function() {
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
         actions.forEach((action) => {
-            const color = (action.team === 'team') ? 'red' : '#1E90FF';
+            const color = (action.team === 'team') ? 'var(--primary-dark)' : 'var(--accent-yellow)';
 
             // Draw shot marker
             if (action.type === 'shot') {
@@ -254,6 +270,7 @@ function StatsTable({ data }) {
 }
 
 document.getElementById('football-pitch').addEventListener('click', recordAction);
+document.getElementById('undo-action').addEventListener('click', undoAction);
 document.getElementById('finish-button').addEventListener('click', generateImage);
 document.getElementById('download-json').addEventListener('click', downloadJSON);
 document.getElementById('show-stats').addEventListener('click', showStats);
