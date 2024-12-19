@@ -159,7 +159,7 @@ function generateImage() {
     const ctx = canvas.getContext('2d');
 
     const img = new Image();
-    img.src = 'football_pitch.jpg';
+    img.src = '/Football-Analysis-Tool/public/football_pitch.jpg';
     img.onload = function() {
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 

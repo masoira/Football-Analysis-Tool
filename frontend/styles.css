@@ -1,15 +1,55 @@
+:root {
+    --primary: #445D48;
+    --primary-dark: #45a049;
+    --surface: #e7fbe6;
+    --text: #f6fff8;
+    --accent: #001524;
+}
+
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f0f0f0;
+    background-color: var(--surface); /* Not visible, this is a fallback if the background image doesn't load */
+    background-image: url('/Football-Analysis-Tool/public/background_pic.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-image: linear-gradient(
+        rgba(0, 0, 0, 0.5),
+        rgba(0, 0, 0, 0.5)     
+    ) fill 1;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    min-height: 100vh;
     margin: 0;
 }
 
+nav {
+    width: 100%;
+    background-color: var(--accent);
+    display: flex;
+    align-items: right;
+    padding: 0.5rem;
+}
+
+nav button {
+    background-color: var(--primary);
+    color: white;
+}
+
+nav button:hover {
+    background-color: var(--primary-dark);
+}
+
 h1 {
-    color: #333;
+    color: var(--text);
+}
+
+p {
+    color: var(--text);
+}
+
+label {
+    color: var(--text);
 }
 
 #football-pitch {
@@ -30,24 +70,28 @@ h1 {
 
 button {
     padding: 10px 20px;
-    background-color: #4CAF50;
+    background-color: var(--primary);
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
     transition: background-color 0.3s;
-    margin-bottom: 10px;
+    margin: 5px;
 }
 
 button:hover {
-    background-color: #45a049;
+    background-color: var(--primary-dark);
+}
+
+table {
+    color: var(--text);
 }
 
 #download-link {
     display: none;
     padding: 10px;
-    background-color: #007BFF;
+    background-color: var(--accent);
     color: white;
     text-decoration: none;
     border-radius: 5px;
@@ -56,7 +100,7 @@ button:hover {
 }
 
 #download-link:hover {
-    background-color: #0056b3;
+    background-color: var(--accent);
 }
 
 #shot-type, #team-selector, #action-type {
