@@ -1,6 +1,6 @@
 {
   "name": "football-analysis-tool",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Tool to store shot information and calculate match statistics.",
   "main": "app.js",
   "directories": {
