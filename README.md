@@ -22,12 +22,11 @@ Note: Always run npm commands from the frontend folder where package.json is loc
 ## Plan:
 
 #### short-term
-- Publish with Github Pages
 - Export and Import files
-- Undo previous action functionality
 
 #### long-term
+- Better state management in the frontend
+- Decision between vanilla JS / React, no hybrid
 - Backend for user management and storage
 - DB for storage
 - Tests
-- CI/CD pipeline
