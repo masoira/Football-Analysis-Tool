@@ -1,9 +1,10 @@
 :root {
     --primary: #445D48;
-    --primary-dark: #45a049;
+    --primary-light: #45a049;
     --surface: #e7fbe6;
     --text: #f6fff8;
     --accent: #001524;
+    --accent-red: #c56161;
 }
 
 body {
@@ -37,7 +38,7 @@ nav button {
 }
 
 nav button:hover {
-    background-color: var(--primary-dark);
+    background-color: var(--primary-light);
 }
 
 h1 {
@@ -81,7 +82,7 @@ button {
 }
 
 button:hover {
-    background-color: var(--primary-dark);
+    background-color: var(--primary-light);
 }
 
 table {
