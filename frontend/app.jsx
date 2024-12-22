@@ -93,7 +93,7 @@ function createShotMarker(x, y, shotType, teamType, xG) {
     marker.style.left = `${x - 10}px`;
     marker.style.top = `${y - 10}px`;
 
-    let color = (teamType === 'team') ? 'var(--primary-dark)' : 'var(--accent-yellow)';
+    let color = (teamType === 'team') ? 'var(--primary-light)' : 'var(--accent-red)';
 
     if (shotType === 'on-target') {
         marker.style.width = '15px';
@@ -121,7 +121,7 @@ function createShotMarker(x, y, shotType, teamType, xG) {
     xgText.style.position = 'absolute';
     xgText.style.left = '0px';
     xgText.style.top = '-15px';
-    xgText.style.color = (teamType === 'team') ? 'var(--primary-dark)' : 'var(--accent-yellow)';
+    xgText.style.color = (teamType === 'team') ? 'var(--primary-light)' : 'var(--accent-red)';
 
     const pitch = document.getElementById('football-pitch');
     marker.appendChild(xgText);
@@ -141,7 +141,7 @@ function drawArrow(startX, startY, endX, endY, actionType, teamType) {
     arrow.style.width = `${length}px`;
     arrow.style.height = '2px';
 
-    let arrowColor = (teamType === 'team') ? 'var(--primary-dark)' : 'var(--accent-yellow)';
+    let arrowColor = (teamType === 'team') ? 'var(--primary-light)' : 'var(--accent-red)';
 
     if (actionType === 'assist') {
         arrow.style.backgroundColor = arrowColor;
@@ -175,12 +175,12 @@ function generateImage() {
     const ctx = canvas.getContext('2d');
 
     const img = new Image();
-    img.src = '/Football-Analysis-Tool/public/football_pitch.jpg';
+    img.src = '/Football-Analysis-Tool/football_pitch.jpg';
     img.onload = function() {
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
         actions.forEach((action) => {
-            const color = (action.team === 'team') ? 'var(--primary-dark)' : 'var(--accent-yellow)';
+            const color = (action.team === 'team') ? 'var(--primary-light)' : 'var(--accent-red)';
 
             // Draw shot marker
             if (action.type === 'shot') {
