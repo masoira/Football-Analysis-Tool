@@ -53,7 +53,7 @@ label {
 }
 
 #football-pitch {
-    background-image: url('football_pitch.jpg'); /* Use your image path */
+    background-image: url('/Football-Analysis-Tool/football_pitch.jpg'); /* Use your image path */
     background-size: cover;
     width: 800px;
     height: 500px;
