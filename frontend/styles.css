@@ -10,7 +10,7 @@
 body {
     font-family: 'Arial', sans-serif;
     background-color: var(--surface); /* Not visible, this is a fallback if the background image doesn't load */
-    background-image: url('/Football-Analysis-Tool/public/background_pic.jpg');
+    background-image: url('/Football-Analysis-Tool/background_pic.jpg');
     background-repeat: no-repeat;
     background-size: cover;
     border-image: linear-gradient(
@@ -54,7 +54,7 @@ label {
 }
 
 #football-pitch {
-    background-image: url('football_pitch.jpg'); /* Use your image path */
+    background-image: url('/Football-Analysis-Tool/football_pitch.jpg'); /* Use your image path */
     background-size: cover;
     width: 800px;
     height: 500px;
