@@ -7,9 +7,9 @@ import { calculateXG } from './utils/expected_goals.js';
 import { getStatsFromActions } from './utils/stats.js';
 
 
+const supabase = createClient(supabaseUrl, supabaseKey)
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
-const supabase = createClient(supabaseUrl, supabaseKey)
 
 let isHeader = false; // Default to "No", meaning not a header
 let actions = [];
@@ -277,7 +277,10 @@ function StatsTable({ data }) {
 
 const handleSignUp = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'github'
+        provider: 'github',
+        options: {
+            redirectTo: 'https://masoira.github.io/Football-Analysis-Tool/'
+          }
     });
 };
 
