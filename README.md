@@ -10,14 +10,20 @@
 2. Install dependencies 
   `npm install`
 
-3. Start the development server
+3. Create a copy of `.env.example` and name it to `.env`
+
+4. Start the development server
   `npm run dev`
 
 Note: Always run npm commands from the frontend folder where package.json is located (not from the root of the repo).
 
-4. Testing
+5. Testing
   `npm run test`
 
+
+### Users
+
+We have set up a Supabase project with GitHub OAuth enabled. From a user we get only their email, but we use this later to save match data for users.
 
 ## Plan:
 
