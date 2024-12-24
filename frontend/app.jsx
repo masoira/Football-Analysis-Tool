@@ -1,9 +1,15 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
+import { createClient } from '@supabase/supabase-js'
 
 import { calculateXG } from './utils/expected_goals.js';
 import { getStatsFromActions } from './utils/stats.js';
+
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabase = createClient(supabaseUrl, supabaseKey)
 
 let isHeader = false; // Default to "No", meaning not a header
 let actions = [];
@@ -269,6 +275,27 @@ function StatsTable({ data }) {
     container._root.render(<StatsTable data={stats} />);
 }
 
+const handleSignUp = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'github'
+    });
+};
+
+// Check account for correct greeting text when page loads
+window.addEventListener('load', async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user?.email) {
+        document.getElementById('user-greeting').textContent = `Hello ${session.user.email}!`;
+    }
+});
+
+const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    document.getElementById('user-greeting').textContent = 'You have logged out.';
+};
+
+document.getElementById('login-button').addEventListener('click', handleSignUp);
+document.getElementById('logout-button').addEventListener('click', handleSignOut);
 document.getElementById('football-pitch').addEventListener('click', recordAction);
 document.getElementById('undo-action').addEventListener('click', undoAction);
 document.getElementById('finish-button').addEventListener('click', generateImage);

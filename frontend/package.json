@@ -1,6 +1,6 @@
 {
   "name": "football-analysis-tool",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Tool to store shot information and calculate match statistics.",
   "main": "app.js",
   "directories": {
@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/masoira/Football-Analysis-Tool#readme",
   "dependencies": {
+    "@supabase/supabase-js": "^2.47.10",
     "@tanstack/react-table": "^8.20.5",
     "jquery": "^3.7.1",
     "react": "^18.3.1",

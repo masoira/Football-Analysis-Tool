@@ -41,6 +41,12 @@ nav button:hover {
     background-color: var(--primary-light);
 }
 
+nav span {
+    color: var(--text);
+    margin: auto;
+    display: inline;
+}
+
 h1 {
     color: var(--text);
 }

@@ -19,6 +19,10 @@ Note: Always run npm commands from the frontend folder where package.json is loc
   `npm run test`
 
 
+### Users
+
+We have set up a Supabase project with GitHub OAuth enabled. From a user we get only their email, but we use this later to save match data for users.
+
 ## Plan:
 
 #### short-term
