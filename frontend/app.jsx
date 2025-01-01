@@ -2,6 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
 import { createClient } from '@supabase/supabase-js'
+import html2canvas from 'html2canvas';
 
 import { calculateXG } from './utils/expected_goals.js';
 import { getStatsFromActions } from './utils/stats.js';
@@ -178,53 +179,13 @@ function downloadJSON() {
 
 
 function generateImage() {
-    const canvas = document.getElementById('shot-map-canvas');
-    const ctx = canvas.getContext('2d');
-
-    const img = new Image();
-    img.src = '/Football-Analysis-Tool/football_pitch.jpg';
-    img.onload = function() {
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-        actions.forEach((action) => {
-            const color = (action.team === 'team') ? 'var(--primary-light)' : 'var(--accent-red)';
-
-            // Draw shot marker
-            if (action.type === 'shot') {
-                if (action.shot_type === 'on-target') {
-                    ctx.beginPath();
-                    ctx.arc(action.x, action.y, 7, 0, Math.PI * 2);
-                    ctx.fillStyle = color;
-                    ctx.fill();
-                } else if (action.shot_type === 'blocked') {
-                    ctx.fillStyle = color;
-                    ctx.fillRect(action.x - 7, action.y - 7, 15, 15);
-                } else if (action.shot_type === 'off-target') {
-                    ctx.fillStyle = color;
-                    ctx.fillText('X', action.x - 10, action.y + 5);
-                }
-            }
-
-            // Draw assist/dribble arrow
-            if (action.assist) {
-                ctx.beginPath();
-                ctx.moveTo(action.x, action.y);
-                ctx.lineTo(action.assist.x, action.assist.y);
-                ctx.strokeStyle = color;
-                ctx.lineWidth = 2;
-                ctx.stroke();
-            }
-        });
-
+    const pitch = document.getElementById('football-pitch');
+    html2canvas(pitch).then(canvas => {
         const downloadLink = document.getElementById('download-link');
+        downloadLink.href = canvas.toDataURL();
         downloadLink.style.display = 'block';
-        downloadLink.onclick = function() {
-            const dataURL = canvas.toDataURL('image/png');
-            downloadLink.href = dataURL;
-        };
-    };
+    });
 }
-
 
 // Renders a sortable table using TanStack Table. Converts data array [{Statistic, Your Team, Opponent},...] into HTML table structure
 function StatsTable({ data }) {
