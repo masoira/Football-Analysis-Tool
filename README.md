@@ -28,10 +28,11 @@ We have set up a Supabase project with GitHub OAuth enabled. From a user we get 
 ## Plan:
 
 #### short-term
-- Export and Import files
+- Use hover to display xG instead of always displaying them
+- refactor xG calculations to be more modular to allow different pitch sizes based on screens sizes
 
 #### long-term
-- Better state management in the frontend
+- Better state management in the frontend - dont modify global actions array
 - Decision between vanilla JS / React, no hybrid
 - Backend for user management and storage
 - DB for storage
