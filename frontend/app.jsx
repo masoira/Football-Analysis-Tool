@@ -90,6 +90,7 @@ function undoAction() {
         actions.pop();
         displayAllActions(actions);
     }
+    currentAction = null;
 }
 
 // draws a single shot marker
