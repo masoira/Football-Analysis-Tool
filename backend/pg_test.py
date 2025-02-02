@@ -5,15 +5,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+NEON_CONN_STRING = os.environ["NEON_CONN_STRING"]
+
 try:
     # Connect to your postgres DB
-    conn = psycopg2.connect(
-        dbname="postgres",
-        user="postgres",
-        password=os.getenv('POSTGRES_PASSWORD'),
-        host="localhost",
-        port="5432"
-    )
+    conn = psycopg2.connect(NEON_CONN_STRING)
+
 
     # Create a cursor
     cur = conn.cursor()

@@ -1,5 +1,4 @@
 from datetime import datetime
-
 from pydantic import BaseModel
 from typing import Literal
 
@@ -20,9 +19,15 @@ class Action(BaseModel):
     assist: AssistAction | None = None
 
 
-class Match(BaseModel):
-    match_name: str 
-    home_team: str
-    away_team: str
-    date: datetime
+class Period(BaseModel):
+    type: Literal["Full Match", "First Half", "Second Half", "Extra"]
     actions: list[Action]
+
+
+class Match(BaseModel):
+    match_id: str  # UUID created by the frontend
+    match_name: str 
+    home_team: str | None = None
+    away_team: str | None = None
+    date: datetime
+    periods: list[Period]
