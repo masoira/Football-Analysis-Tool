@@ -56,9 +56,11 @@ async def hello(payload: dict = Depends(verify_token)):
 
 matches_router = APIRouter(prefix="/matches")
 
+
 @matches_router.get("/{match_name}")
 async def get_match(match_name: str = Path(...), payload: dict = Depends(verify_token)):
     print(match_name)
+
 
 @matches_router.get("/list") 
 async def list_matches(payload: dict = Depends(verify_token)):
@@ -66,11 +68,13 @@ async def list_matches(payload: dict = Depends(verify_token)):
    matches = await list_matches_from_db(user_id=payload["sub"])
    return matches
 
+
 @matches_router.post("/create")
 async def create_match(match_data: dict = Body(...), payload: dict = Depends(verify_token)):
    """Create a new match for the authenticated user"""
    match = await create_match_in_db(match_data, user_id=payload["sub"])
    return match
+
 
 @matches_router.put("/{match_name}")
 async def update_match(
@@ -82,6 +86,7 @@ async def update_match(
    updated_match = await update_match_in_db(match_name, match_data, user_id=payload["sub"])
    return updated_match
 
+
 @matches_router.delete("/{match_name}")
 async def delete_match(
    match_name: str = Path(...),
@@ -91,7 +96,9 @@ async def delete_match(
    await delete_match_from_db(match_name, user_id=payload["sub"])
    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
+
 app.include_router(matches_router)
+
 
 if __name__ == "__main__":
     import uvicorn
