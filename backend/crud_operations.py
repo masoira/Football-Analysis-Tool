@@ -1,8 +1,8 @@
 from asyncpg.pool import Pool
 
 
-async def get_match_from_db(match_name: str, user_id: str) -> dict:
-   """Get a single match by name for a specific user"""
+async def get_match_from_db(match_id: str, user_id: str) -> dict:
+   """Get a single match by id for a specific user"""
    pass
 
 
@@ -29,9 +29,9 @@ async def update_match_in_db(
     Returns:
         dict: {"status": "updated" | "created", "match_id": str}
     """
- 
+    pass
 
 
-async def delete_match_from_db(match_name: str, user_id: str) -> None:
+async def delete_match_from_db(match_id: str, user_id: str) -> None:
    """Delete a match for a specific user"""
    pass
