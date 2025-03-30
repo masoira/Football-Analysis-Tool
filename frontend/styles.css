@@ -113,3 +113,38 @@ table {
 #shot-type, #team-selector, #action-type {
     margin-bottom: 20px;
 }
+
+.shot-marker {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+}
+
+.shot-marker.on-target {
+    background-color: var(--primary-light);
+}
+
+.shot-marker.off-target {
+    width: 20px;
+    height: 20px;
+    color: var(--accent-red);
+    font-size: 16px;
+    text-align: center;
+    line-height: 20px;
+}
+
+.shot-marker.blocked {
+    background-color: var(--accent-red);
+}
+
+.xg-text {
+    position: absolute;
+    left: 0px;
+    top: -15px;
+    font-size: 12px;
+    color: white;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 2px 4px;
+    border-radius: 4px;
+}
