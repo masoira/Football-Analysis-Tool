@@ -13,6 +13,7 @@ from crud_operations import (
    update_match_in_db,
    delete_match_from_db
 )
+from models import Match
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -57,42 +58,42 @@ async def hello(payload: dict = Depends(verify_token)):
 matches_router = APIRouter(prefix="/matches")
 
 
-@matches_router.get("/{match_id}")
-async def get_match(match_id: str = Path(...), payload: dict = Depends(verify_token)):
+@matches_router.get("/{match_id}", response_model=Match)
+async def get_match(match_id: str = Path(...), payload: dict = Depends(verify_token)) -> Match:
     match = await get_match_from_db(match_id, user_id=payload["sub"])
     return match
 
 
-@matches_router.get("/")
-async def list_matches(payload: dict = Depends(verify_token)):
+@matches_router.get("/", response_model=list[Match])
+async def list_matches(payload: dict = Depends(verify_token))-> list[Match]:
    """List all matches for the authenticated user"""
    matches = await list_matches_from_db(user_id=payload["sub"])
    return matches
 
 
-@matches_router.post("/")
-async def create_match(match_data: dict = Body(...), payload: dict = Depends(verify_token)):
+@matches_router.post("/", response_model=Match, status_code=201)
+async def create_match(match_data: Match = Body(...), payload: dict = Depends(verify_token)) -> Match:
    """Create a new match for the authenticated user"""
    match = await create_match_in_db(match_data, user_id=payload["sub"])
    return match
 
 
-@matches_router.put("/{match_id}")
+@matches_router.put("/{match_id}", response_model=Match)
 async def update_match(
    match_id: str = Path(...), 
-   match_data: dict = Body(...), 
+   match_data: Match = Body(...), 
    payload: dict = Depends(verify_token)
-):
+) -> Match:
    """Update an existing match"""
    updated_match = await update_match_in_db(match_id, match_data, user_id=payload["sub"])
    return updated_match
 
 
-@matches_router.delete("/{match_id}")
+@matches_router.delete("/{match_id}", status_code=204)
 async def delete_match(
    match_id: str = Path(...),
    payload: dict = Depends(verify_token)
-):
+) -> Response:
    """Delete a match"""
    await delete_match_from_db(match_id, user_id=payload["sub"])
    return Response(status_code=status.HTTP_204_NO_CONTENT)
