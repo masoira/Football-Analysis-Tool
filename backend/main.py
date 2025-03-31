@@ -13,7 +13,10 @@ from crud_operations import (
    update_match_in_db,
    delete_match_from_db
 )
+from database import get_session
+from sqlmodel.ext.asyncio.session import AsyncSession
 from models import MatchDB, MatchPublic
+
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -59,46 +62,59 @@ matches_router = APIRouter(prefix="/matches")
 
 
 @matches_router.get("/{match_id}", response_model=MatchPublic)
-async def get_match(match_id: str = Path(...), payload: dict = Depends(verify_token)) -> MatchPublic:
-    match = await get_match_from_db(match_id, user_id=payload["sub"])
+async def get_match(
+    match_id: str = Path(...),
+    payload: dict = Depends(verify_token),
+    session: AsyncSession = Depends(get_session),
+) -> MatchPublic:
+    match = await get_match_from_db(match_id, user_id=payload["sub"], session=session)
     return match
 
 
 @matches_router.get("/", response_model=list[MatchPublic])
-async def list_matches(payload: dict = Depends(verify_token))-> list[MatchPublic]:
-   """List all matches for the authenticated user"""
-   matches = await list_matches_from_db(user_id=payload["sub"])
-   return matches
+async def list_matches(
+    payload: dict = Depends(verify_token),
+    session: AsyncSession = Depends(get_session),
+)-> list[MatchPublic]:
+    """List all matches for the authenticated user"""
+    matches = await list_matches_from_db(user_id=payload["sub"], session=session)
+    return matches
 
 
 @matches_router.post("/", response_model=MatchPublic, status_code=201)
-async def create_match(match_data: MatchPublic = Body(...), payload: dict = Depends(verify_token)) -> MatchPublic:
-   """Create a new match for the authenticated user"""
-   match_db = MatchDB(**match_data.model_dump(), user_id=payload["sub"])
-   match = await create_match_in_db(match_db)
-   return match
+async def create_match(
+    match_data: MatchPublic = Body(...),
+    payload: dict = Depends(verify_token),
+    session: AsyncSession = Depends(get_session),    
+) -> MatchPublic:
+    """Create a new match for the authenticated user"""
+    match_db = MatchDB(**match_data.model_dump(), user_id=payload["sub"])
+    match = await create_match_in_db(match_db, session=session)
+    return match
 
 
 @matches_router.put("/{match_id}", response_model=MatchPublic)
 async def update_match(
-   match_id: str = Path(...), 
-   match_data: MatchPublic = Body(...), 
-   payload: dict = Depends(verify_token)
+    match_id: str = Path(...), 
+    match_data: MatchPublic = Body(...), 
+    payload: dict = Depends(verify_token),
+    session: AsyncSession = Depends(get_session),
 ) -> MatchPublic:
-   """Update an existing match"""
-   match_db = MatchDB(**match_data.model_dump(), user_id=payload["sub"])
-   updated_match = await update_match_in_db(match_id, match_db)
-   return updated_match
+    """Update an existing match"""
+    match_db = MatchDB(**match_data.model_dump(), user_id=payload["sub"])
+    updated_match = await update_match_in_db(match_id, match_db, session=session)
+    return updated_match
 
 
 @matches_router.delete("/{match_id}", status_code=204)
 async def delete_match(
-   match_id: str = Path(...),
-   payload: dict = Depends(verify_token)
+    match_id: str = Path(...),
+    payload: dict = Depends(verify_token),
+    session: AsyncSession = Depends(get_session),
 ) -> Response:
-   """Delete a match"""
-   await delete_match_from_db(match_id, user_id=payload["sub"])
-   return Response(status_code=status.HTTP_204_NO_CONTENT)
+    """Delete a match"""
+    await delete_match_from_db(match_id, user_id=payload["sub"], session=session)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 app.include_router(matches_router)
