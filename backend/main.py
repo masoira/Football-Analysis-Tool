@@ -13,7 +13,7 @@ from crud_operations import (
    update_match_in_db,
    delete_match_from_db
 )
-from models import Match
+from models import MatchDB, MatchPublic
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG)
@@ -58,34 +58,36 @@ async def hello(payload: dict = Depends(verify_token)):
 matches_router = APIRouter(prefix="/matches")
 
 
-@matches_router.get("/{match_id}", response_model=Match)
-async def get_match(match_id: str = Path(...), payload: dict = Depends(verify_token)) -> Match:
+@matches_router.get("/{match_id}", response_model=MatchPublic)
+async def get_match(match_id: str = Path(...), payload: dict = Depends(verify_token)) -> MatchPublic:
     match = await get_match_from_db(match_id, user_id=payload["sub"])
     return match
 
 
-@matches_router.get("/", response_model=list[Match])
-async def list_matches(payload: dict = Depends(verify_token))-> list[Match]:
+@matches_router.get("/", response_model=list[MatchPublic])
+async def list_matches(payload: dict = Depends(verify_token))-> list[MatchPublic]:
    """List all matches for the authenticated user"""
    matches = await list_matches_from_db(user_id=payload["sub"])
    return matches
 
 
-@matches_router.post("/", response_model=Match, status_code=201)
-async def create_match(match_data: Match = Body(...), payload: dict = Depends(verify_token)) -> Match:
+@matches_router.post("/", response_model=MatchPublic, status_code=201)
+async def create_match(match_data: MatchPublic = Body(...), payload: dict = Depends(verify_token)) -> MatchPublic:
    """Create a new match for the authenticated user"""
-   match = await create_match_in_db(match_data, user_id=payload["sub"])
+   match_db = MatchDB(**match_data.model_dump(), user_id=payload["sub"])
+   match = await create_match_in_db(match_db)
    return match
 
 
-@matches_router.put("/{match_id}", response_model=Match)
+@matches_router.put("/{match_id}", response_model=MatchPublic)
 async def update_match(
    match_id: str = Path(...), 
-   match_data: Match = Body(...), 
+   match_data: MatchPublic = Body(...), 
    payload: dict = Depends(verify_token)
-) -> Match:
+) -> MatchPublic:
    """Update an existing match"""
-   updated_match = await update_match_in_db(match_id, match_data, user_id=payload["sub"])
+   match_db = MatchDB(**match_data.model_dump(), user_id=payload["sub"])
+   updated_match = await update_match_in_db(match_id, match_db)
    return updated_match
 
 

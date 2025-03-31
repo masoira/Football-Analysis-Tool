@@ -27,11 +27,24 @@ class Period(BaseModel):
     actions: list[Action]
 
 
-class Match(SQLModel, table=True):
-    match_id: str = Field(primary_key=True)  # UUID created by the frontend
+# Models are split to keep things clean:
+# - MatchBase holds shared fields to avoid duplication
+# - MatchDB is the full DB model (includes user_id for ownership). user_id must not be provided by the frontend because it is used
+#   to filter for rows in the DB. Altered user_id could grant unauthorized access to data.
+# - MatchPublic is what we return to clients (no user_id)
+
+class MatchBase(SQLModel):
     match_name: str 
     home_team: str | None = None
     away_team: str | None = None
     date: datetime
     periods: list[dict] = Field(sa_column=Column(JSONB))
-    # TODO: Should user_id be a field here or a part of a separate MatchDb object?
+
+
+class MatchDB(MatchBase, table=True):
+    match_id: str = Field(primary_key=True)  # UUID created by the frontend
+    user_id: str  # Should be a foreign key but no user table exists yet
+
+
+class MatchPublic(MatchBase):
+    match_id: str  # UUID created by the frontend
