@@ -1,31 +1,26 @@
 from sqlmodel.ext.asyncio.session import AsyncSession
-from models import Match
+from models import MatchDB
 from sqlalchemy import select
 from fastapi import HTTPException
 
 
-# TODO: Filter everything by user_id
-# TODO: Check rollback handling
-# TODO: Potentially create a model for MatchDB which has user_id
-
-
-async def get_match_from_db(match_id: str, user_id: str, session: AsyncSession) -> Match:
+async def get_match_from_db(match_id: str, user_id: str, session: AsyncSession) -> MatchDB:
    """Get a single match by id for a specific user"""
-   statement = select(Match).where(Match.match_id == match_id)
+   statement = select(MatchDB).where(MatchDB.user_id == user_id, MatchDB.match_id == match_id)
    result = await session.exec(statement)
    match = result.first()
    if not match:
        raise HTTPException(status_code=404, detail="Match not found")
    return match
 
-async def list_matches_from_db(user_id: str, session: AsyncSession) -> list[Match]:
+async def list_matches_from_db(user_id: str, session: AsyncSession) -> list[MatchDB]:
    """Get all matches for a specific user"""
-   statement = select(Match)
+   statement = select(MatchDB).where(MatchDB.user_id == user_id)
    result = await session.exec(statement)
    matches = result.all()
    return matches
 
-async def create_match_in_db(match_data: Match, user_id: str, session: AsyncSession) -> Match:
+async def create_match_in_db(match_data: MatchDB, session: AsyncSession) -> MatchDB:
    """Create a new match for a specific user"""
    session.add(match_data)
    await session.commit()
@@ -34,15 +29,15 @@ async def create_match_in_db(match_data: Match, user_id: str, session: AsyncSess
 
 async def update_match_in_db(
     match_id: str,
-    match_data: Match,
-    user_id: str,
+    match_data: MatchDB,
     session: AsyncSession
-) -> Match:
+) -> MatchDB:
     """
     Update existing match for a specific user.
     """
-    statement = select(Match).where(Match.match_id == match_id)
-    existing_match = (await session.exec(statement)).first()
+    statement = select(MatchDB).where(MatchDB.user_id == match_data.user_id, MatchDB.match_id == match_id)
+    result = await session.exec(statement)
+    existing_match = result.first()
     if not existing_match:
         raise HTTPException(status_code=404, detail="Match not found")
 
@@ -59,7 +54,7 @@ async def update_match_in_db(
 
 async def delete_match_from_db(match_id: str, user_id: str, session: AsyncSession) -> None:
    """Delete a match for a specific user"""
-   statement = select(Match).where(Match.match_id == match_id)
+   statement = select(MatchDB).where(MatchDB.user_id == user_id, MatchDB.match_id == match_id)
    result = await session.exec(statement)
    match = result.first()
    if not match:
