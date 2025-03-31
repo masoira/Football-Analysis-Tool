@@ -22,6 +22,7 @@ def create_test_token():
 
 def test_hello_endpoint():
     token = create_test_token()
+    print(f"{token=}")
     response = requests.get(
         "http://127.0.0.1:8000/hello",
         headers={"Authorization": f"Bearer {token}"},

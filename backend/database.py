@@ -1,5 +1,6 @@
 from collections.abc import AsyncGenerator
 import os
+import ssl
 
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
@@ -8,11 +9,14 @@ from sqlmodel import SQLModel
 
 load_dotenv()
 
-RAW_URL = os.environ["NEON_CONN_STRING"]
-DATABASE_URL = RAW_URL.replace("postgresql://", "postgresql+asyncpg://")  # To make it compatible with AsyncSession
+DATABASE_URL = os.environ["DATABASE_URL"]
+ssl_context = ssl.create_default_context()
 
+engine = create_async_engine(
+    DATABASE_URL,
+    connect_args={"ssl": ssl_context},
+)
 
-engine = create_async_engine(DATABASE_URL)
 async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 

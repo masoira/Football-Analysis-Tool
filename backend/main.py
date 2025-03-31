@@ -13,7 +13,7 @@ from crud_operations import (
    update_match_in_db,
    delete_match_from_db
 )
-from database import get_session
+from database import get_session, init_db
 from sqlmodel.ext.asyncio.session import AsyncSession
 from models import MatchDB, MatchPublic
 
@@ -118,6 +118,11 @@ async def delete_match(
 
 
 app.include_router(matches_router)
+
+# TODO: update on_event handler
+@app.on_event("startup")
+async def on_startup():
+    await init_db()
 
 
 if __name__ == "__main__":
