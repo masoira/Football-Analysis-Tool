@@ -13,7 +13,7 @@ from crud_operations import (
    update_match_in_db,
    delete_match_from_db
 )
-from database import get_session, init_db
+from database import get_session_context, init_db
 from sqlmodel.ext.asyncio.session import AsyncSession
 from models import MatchDB, MatchPublic
 
@@ -65,7 +65,7 @@ matches_router = APIRouter(prefix="/matches")
 async def get_match(
     match_id: str = Path(...),
     payload: dict = Depends(verify_token),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_session_context),
 ) -> MatchPublic:
     match = await get_match_from_db(match_id, user_id=payload["sub"], session=session)
     return match
@@ -74,7 +74,7 @@ async def get_match(
 @matches_router.get("/", response_model=list[MatchPublic])
 async def list_matches(
     payload: dict = Depends(verify_token),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_session_context),
 )-> list[MatchPublic]:
     """List all matches for the authenticated user"""
     matches = await list_matches_from_db(user_id=payload["sub"], session=session)
@@ -85,7 +85,7 @@ async def list_matches(
 async def create_match(
     match_data: MatchPublic = Body(...),
     payload: dict = Depends(verify_token),
-    session: AsyncSession = Depends(get_session),    
+    session: AsyncSession = Depends(get_session_context),    
 ) -> MatchPublic:
     """Create a new match for the authenticated user"""
     match_db = MatchDB(**match_data.model_dump(), user_id=payload["sub"])
@@ -98,7 +98,7 @@ async def update_match(
     match_id: str = Path(...), 
     match_data: MatchPublic = Body(...), 
     payload: dict = Depends(verify_token),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_session_context),
 ) -> MatchPublic:
     """Update an existing match"""
     match_db = MatchDB(**match_data.model_dump(), user_id=payload["sub"])
@@ -110,7 +110,7 @@ async def update_match(
 async def delete_match(
     match_id: str = Path(...),
     payload: dict = Depends(verify_token),
-    session: AsyncSession = Depends(get_session),
+    session: AsyncSession = Depends(get_session_context),
 ) -> Response:
     """Delete a match"""
     await delete_match_from_db(match_id, user_id=payload["sub"], session=session)

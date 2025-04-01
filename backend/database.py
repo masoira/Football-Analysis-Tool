@@ -1,4 +1,5 @@
 from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 import os
 import ssl
 import logging
@@ -20,8 +21,11 @@ engine = create_async_engine(
     connect_args={"ssl": ssl_context},
 )
 
-async_session = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
-
+async_session = async_sessionmaker(
+    engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+)
 
 async def init_db():
     logger.info("Running init_db")
@@ -30,8 +34,15 @@ async def init_db():
     logger.info("init_db complete")
 
 
-async def get_session() -> AsyncGenerator[AsyncSession, None]:
-    logger.info("Opening async database session")
+@asynccontextmanager
+async def get_session_context() -> AsyncGenerator[AsyncSession, None]:
     async with async_session() as session:
-        yield session
-    logger.info("Database session closed")
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            logger.exception("Session rolled back due to exception")
+            raise
+        finally:
+            logger.debug("Session closed")
