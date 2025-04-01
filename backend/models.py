@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from pydantic import BaseModel
 from typing import Literal
 
@@ -37,7 +37,7 @@ class MatchBase(SQLModel):
     match_name: str 
     home_team: str | None = None
     away_team: str | None = None
-    date: datetime
+    date: date
     periods: list[dict] = Field(sa_column=Column(JSONB))
 
 
