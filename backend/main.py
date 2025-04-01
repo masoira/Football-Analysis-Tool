@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 import logging
 import os
 
@@ -24,7 +25,14 @@ logging.basicConfig(level=logging.DEBUG)
 load_dotenv()
 SUPABASE_JWT_SECRET = os.environ["SUPABASE_JWT_SECRET"]
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init_db()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 security = HTTPBearer()
 
 
@@ -118,11 +126,6 @@ async def delete_match(
 
 
 app.include_router(matches_router)
-
-# TODO: update on_event handler
-@app.on_event("startup")
-async def on_startup():
-    await init_db()
 
 
 if __name__ == "__main__":
