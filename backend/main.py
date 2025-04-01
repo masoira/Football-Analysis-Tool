@@ -8,11 +8,11 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt
 
 from crud_operations import (
-   get_match_from_db,
-   list_matches_from_db,
-   create_match_in_db,
-   update_match_in_db,
-   delete_match_from_db
+    get_match_from_db,
+    list_matches_from_db,
+    create_match_in_db,
+    update_match_in_db,
+    delete_match_from_db
 )
 from database import get_session_context, init_db
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -73,56 +73,56 @@ matches_router = APIRouter(prefix="/matches")
 async def get_match(
     match_id: str = Path(...),
     payload: dict = Depends(verify_token),
-    session: AsyncSession = Depends(get_session_context),
 ) -> MatchPublic:
-    match = await get_match_from_db(match_id, user_id=payload["sub"], session=session)
-    return match
+    async with get_session_context() as session:
+        match = await get_match_from_db(match_id, user_id=payload["sub"], session=session)
+        return match
 
 
 @matches_router.get("/", response_model=list[MatchPublic])
 async def list_matches(
     payload: dict = Depends(verify_token),
-    session: AsyncSession = Depends(get_session_context),
 )-> list[MatchPublic]:
     """List all matches for the authenticated user"""
-    matches = await list_matches_from_db(user_id=payload["sub"], session=session)
-    return matches
+    async with get_session_context() as session:
+        matches = await list_matches_from_db(user_id=payload["sub"], session=session)
+        return matches
 
 
 @matches_router.post("/", response_model=MatchPublic, status_code=201)
 async def create_match(
     match_data: MatchPublic = Body(...),
     payload: dict = Depends(verify_token),
-    session: AsyncSession = Depends(get_session_context),    
 ) -> MatchPublic:
     """Create a new match for the authenticated user"""
     match_db = MatchDB(**match_data.model_dump(), user_id=payload["sub"])
-    match = await create_match_in_db(match_db, session=session)
-    return match
+    async with get_session_context() as session:
+        match = await create_match_in_db(match_db, session=session)
+        return match
 
 
 @matches_router.put("/{match_id}", response_model=MatchPublic)
 async def update_match(
-    match_id: str = Path(...), 
-    match_data: MatchPublic = Body(...), 
+    match_id: str = Path(...),
+    match_data: MatchPublic = Body(...),
     payload: dict = Depends(verify_token),
-    session: AsyncSession = Depends(get_session_context),
 ) -> MatchPublic:
     """Update an existing match"""
     match_db = MatchDB(**match_data.model_dump(), user_id=payload["sub"])
-    updated_match = await update_match_in_db(match_id, match_db, session=session)
-    return updated_match
+    async with get_session_context() as session:
+        updated_match = await update_match_in_db(match_id, match_db, session=session)
+        return updated_match
 
 
 @matches_router.delete("/{match_id}", status_code=204)
 async def delete_match(
     match_id: str = Path(...),
     payload: dict = Depends(verify_token),
-    session: AsyncSession = Depends(get_session_context),
 ) -> Response:
     """Delete a match"""
-    await delete_match_from_db(match_id, user_id=payload["sub"], session=session)
-    return Response(status_code=status.HTTP_204_NO_CONTENT)
+    async with get_session_context() as session:
+        await delete_match_from_db(match_id, user_id=payload["sub"], session=session)
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 app.include_router(matches_router)
