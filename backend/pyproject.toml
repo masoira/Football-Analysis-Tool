@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fa-backend"
+version = "0.1.0"
+description = "Football Analysis Tool backend to store match data of users"
+requires-python = ">=3.12"
+dependencies = [
+    "asyncpg==0.30.0",
+    "fastapi==0.115.12",
+    "python-dotenv==1.1.0",
+    "python-jose==3.4.0",
+    "sqlalchemy==2.0.40",
+    "sqlmodel==0.0.24",
+    "uvicorn==0.34.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
