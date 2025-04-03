@@ -15,8 +15,7 @@ from crud_operations import (
     delete_match_from_db
 )
 from database import get_session_context, init_db
-from sqlmodel.ext.asyncio.session import AsyncSession
-from models import MatchDB, MatchPublic
+from models import MatchBase, MatchDB, MatchCreate, MatchPublic
 
 
 logger = logging.getLogger(__name__)
@@ -73,7 +72,7 @@ matches_router = APIRouter(prefix="/matches")
 async def get_match(
     match_id: str = Path(...),
     payload: dict = Depends(verify_token),
-) -> MatchPublic:
+) -> MatchBase:
     async with get_session_context() as session:
         match = await get_match_from_db(match_id, user_id=payload["sub"], session=session)
         return match
@@ -82,7 +81,7 @@ async def get_match(
 @matches_router.get("/", response_model=list[MatchPublic])
 async def list_matches(
     payload: dict = Depends(verify_token),
-)-> list[MatchPublic]:
+)-> list[MatchBase]:
     """List all matches for the authenticated user"""
     async with get_session_context() as session:
         matches = await list_matches_from_db(user_id=payload["sub"], session=session)
@@ -91,7 +90,7 @@ async def list_matches(
 
 @matches_router.post("/", response_model=MatchPublic, status_code=201)
 async def create_match(
-    match_data: MatchPublic = Body(...),
+    match_data: MatchCreate = Body(...),
     payload: dict = Depends(verify_token),
 ) -> MatchPublic:
     """Create a new match for the authenticated user"""
