@@ -21,6 +21,23 @@ Note: Always run npm commands from the frontend folder where package.json is loc
   `npm run test`
 
 
+### Backend Setup
+1. cd into backend folder
+  `cd backend`
+
+2. Install dependencies
+  `pip install -e .`
+
+3. Create a copy of `.env.example` and name it to `.env`
+
+4. Start the backend server
+  `python src/main.py`
+  - You can access the Swagger docs by adding "/docs" to the ends of the base url
+
+5. Test the backend
+  Once the backend server is running you can authenticate on Swagger page by manually creating a test token running:
+  `python src/manual_test_file.py`
+
 ### Users
 
 We have set up a Supabase project with GitHub OAuth enabled. From a user we get only their email, but we use this later to save match data for users.
@@ -34,6 +51,5 @@ We have set up a Supabase project with GitHub OAuth enabled. From a user we get 
 #### long-term
 - Better state management in the frontend - dont modify global actions array
 - Decision between vanilla JS / React, no hybrid
-- Backend for user management and storage
 - DB for storage
 - Tests
