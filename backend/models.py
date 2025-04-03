@@ -1,6 +1,7 @@
 from datetime import date
 from pydantic import BaseModel
 from typing import Literal
+import uuid
 
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlmodel import SQLModel, Field, Column
@@ -31,6 +32,7 @@ class Period(BaseModel):
 # - MatchBase holds shared fields to avoid duplication
 # - MatchDB is the full DB model (includes user_id for ownership). user_id must not be provided by the frontend because it is used
 #   to filter for rows in the DB. Altered user_id could grant unauthorized access to data.
+# - MatchCreate is duplication of the Base class but makes it more explicit for clients that that is the schema needed for creating objects.
 # - MatchPublic is what we return to clients (no user_id)
 
 class MatchBase(SQLModel):
@@ -42,9 +44,13 @@ class MatchBase(SQLModel):
 
 
 class MatchDB(MatchBase, table=True):
-    match_id: str = Field(primary_key=True)  # UUID created by the frontend
+    match_id: str = Field(default_factory=lambda: str(uuid.uuid4()), primary_key=True)
     user_id: str  # Should be a foreign key but no user table exists yet
 
 
+class MatchCreate(MatchBase):
+    pass
+
+
 class MatchPublic(MatchBase):
-    match_id: str  # UUID created by the frontend
+    match_id: str  # UUID created by BE (the default factory) when adding the match to our DB for the first time
