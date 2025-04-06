@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createClient } from '@supabase/supabase-js'
 import ActionOptions from './components/ActionOptions.jsx';
 import ShotMarker from './components/ShotMarker'
 import Arrow from './components/Arrow'
@@ -17,6 +18,40 @@ const App = () => {
   const [actionType, setActionType] = useState('none');
   const [currentAction, setCurrentAction] = useState(null);
 
+  // Supabase Auth stuff
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+  const supabase = createClient(supabaseUrl, supabaseKey)
+  const [user, setUser] = useState(null);
+
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+  
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+  
+    return () => subscription.unsubscribe();
+  }, []);
+  
+  const handleLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'github',
+      options: {
+        redirectTo: 'https://masoira.github.io/Football-Analysis-Tool/'
+      }
+    });
+  };
+  
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setUser(null);
+  };
+
+  // Pitch and Actions related code starts
   const handlePitchClick = (event) => {
     const pitch = document.getElementById('football-pitch');
     const rect = pitch.getBoundingClientRect();
@@ -70,9 +105,9 @@ const App = () => {
   return (
     <>
       <nav>
-        <button id="login-button">Login</button>
-        <button id="logout-button">Logout</button>
-        <span id="user-greeting">Hello! You have not logged in yet.</span>
+        <button onClick={handleLogin}>Login</button>
+        <button onClick={handleLogout}>Logout</button>
+        <span>Hello {user ? user.email : 'You have not logged in yet.'}</span>
       </nav>
 
       <h1>Football Shot Analysis</h1>
