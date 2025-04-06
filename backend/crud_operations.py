@@ -25,7 +25,8 @@ async def list_matches_from_db(user_id: str, session: AsyncSession) -> list[Matc
     result = await session.scalars(statement)
     matches = result.all()
     logger.info(f"User {user_id} found {len(matches)} matches")
-    logger.info(f"The first match on the list is: {matches[0]}")
+    if matches:
+        logger.info(f"The first match on the list is: {matches[0]}")
     return matches
 
 
