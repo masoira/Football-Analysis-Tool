@@ -4,6 +4,7 @@ import os
 
 from dotenv import load_dotenv
 from fastapi import APIRouter, Body, FastAPI, HTTPException, Depends, Path, Response, Security, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt
 
@@ -41,13 +42,16 @@ async def verify_token(authorization: HTTPAuthorizationCredentials = Security(se
     """
     try:
         token = authorization.credentials
-        payload = jwt.decode(token, SUPABASE_JWT_SECRET, algorithms=["HS256"])
+        payload = jwt.decode(token, SUPABASE_JWT_SECRET, algorithms=["HS256"], audience="authenticated")
         return payload
     except jwt.ExpiredSignatureError:
+        logger.warning("Token has expired")
         raise HTTPException(status_code=401, detail="Token has expired")
     except jwt.JWTError:
+        logger.warning("Invalid token")
         raise HTTPException(status_code=401, detail="Invalid token")
     except Exception as e:
+        logger.warning(f"Unexpected token verification error: {e}")
         raise HTTPException(status_code=401, detail=str(e))
 
 
@@ -126,6 +130,13 @@ async def delete_match(
 
 app.include_router(matches_router)
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 if __name__ == "__main__":
     import uvicorn
