@@ -1,72 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useReactTable, getCoreRowModel, flexRender } from '@tanstack/react-table';
-import html2canvas from 'html2canvas';
+import ActionOptions from './components/ActionOptions.jsx';
+import ShotMarker from './components/ShotMarker'
+import Arrow from './components/Arrow'
+import StatsTable from './components/StatsTable'
 import { calculateXG } from './utils/expected_goals.js';
 import { getStatsFromActions } from './utils/stats.js';
 import './styles.css';
-
-// Shot Marker Component
-const ShotMarker = ({ x, y, shotType, team, isHeader, xG }) => {
-  const markerClass = isHeader ? 'header-shot' : shotType;
-  
-  return (
-    <div className={`shot-marker ${markerClass}`} style={{ left: `${x - 10}px`, top: `${y - 10}px` }}>
-      {shotType === 'off-target' ? 'X' : ''}
-      <div className="xg-text">{xG.toFixed(2)}</div>
-    </div>
-  );
-};
-
-// Arrow Component for Assists & Dribbles
-const Arrow = ({ startX, startY, endX, endY, actionType, team }) => {
-  const style = {
-    left: `${startX}px`,
-    top: `${startY}px`,
-    width: `${Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2)}px`,
-    transform: `rotate(${Math.atan2(endY - startY, endX - startX) * 180 / Math.PI}deg)`,
-    transformOrigin: '0 0',
-    position: 'absolute',
-    borderBottom: actionType === 'assist' ? '2px solid var(--primary-light)' : '2px dotted var(--accent-red)',
-  };
-
-  return <div className="arrow" style={style}></div>;
-};
-
-// Stats Table Component
-const StatsTable = ({ data }) => {
-  const columns = [
-    { accessorKey: 'Statistic', header: 'Statistic' },
-    { accessorKey: 'Your Team', header: 'Your Team' },
-    { accessorKey: 'Opponent', header: 'Opponent' },
-  ];
-
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-  });
-
-  return (
-    <table>
-      <thead>
-        <tr>
-          {columns.map(column => (
-            <th key={column.accessorKey}>{column.header}</th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {table.getRowModel().rows.map(row => (
-          <tr key={row.id}>
-            {row.getVisibleCells().map(cell => (
-              <td key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
-};
 
 // Main App Component
 const App = () => {
@@ -138,6 +77,13 @@ const App = () => {
 
       <h1>Football Shot Analysis</h1>
       <p>Click anywhere on the pitch to record a shot.</p>
+
+      <ActionOptions
+      teamType={teamType} setTeamType={setTeamType}
+      shotType={shotType} setShotType={setShotType}
+      isHeader={isHeader} setIsHeader={setIsHeader}
+      actionType={actionType} setActionType={setActionType}
+      />
 
       <div id="football-pitch" onClick={handlePitchClick}>
         {actions.map((action, index) => (
