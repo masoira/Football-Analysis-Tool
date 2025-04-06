@@ -1,0 +1,41 @@
+.shot-marker {
+    position: absolute;
+    font-size: 16px;
+    text-align: center;
+    line-height: 20px;
+  }
+  
+  .shot-marker.team {
+    background-color: var(--primary-light);
+  }
+  
+  .shot-marker.opponent {
+    background-color: var(--accent-red);
+  }
+  
+  .shot-marker.on-target,
+  .shot-marker.blocked {
+    width: 15px;
+    height: 15px;
+  }
+  
+  .shot-marker.on-target {
+    border-radius: 50%;
+  }
+  
+  .shot-marker.blocked {
+    border-radius: 0%;
+  }
+  
+  .shot-marker.off-target {
+    width: 20px;
+    height: 20px;
+    border-radius: 0;
+  }
+  
+  .xg-text {
+    position: absolute;
+    top: -15px;
+    left: 0;
+  }
+  
