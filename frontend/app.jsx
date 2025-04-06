@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js'
 import ActionOptions from './components/ActionOptions.jsx';
 import Arrow from './components/Arrow'
 import MatchSelector from './components/MatchSelector';
 import ShotMarker from './components/ShotMarker'
 import StatsTable from './components/StatsTable'
-import { calculateXG } from './utils/expected_goals.js';
+import { supabase } from './utils/supabaseClient.js';
+import { calculateXG } from './utils/expectedGoals.js';
 import { getStatsFromActions } from './utils/stats.js';
 import './styles.css';
 
@@ -20,9 +20,7 @@ const App = () => {
   const [currentAction, setCurrentAction] = useState(null);
 
   // Supabase Auth stuff
-  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-  const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
-  const supabase = createClient(supabaseUrl, supabaseKey)
+  const supabaseRedirectUrl = import.meta.env.VITE_SUPABASE_REDIRECT_URL
   const [user, setUser] = useState(null);
 
 
@@ -42,7 +40,7 @@ const App = () => {
     await supabase.auth.signInWithOAuth({
       provider: 'github',
       options: {
-        redirectTo: 'https://masoira.github.io/Football-Analysis-Tool/'
+        redirectTo: supabaseRedirectUrl
       }
     });
   };
@@ -114,7 +112,7 @@ const App = () => {
       <h1>Football Shot Analysis</h1>
       <p>Click anywhere on the pitch to record a shot.</p>
 
-      <MatchSelector supabase={supabase} />
+      <MatchSelector />
 
       <ActionOptions
       teamType={teamType} setTeamType={setTeamType}
