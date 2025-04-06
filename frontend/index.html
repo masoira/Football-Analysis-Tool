@@ -10,65 +10,8 @@
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="manifest" href="/site.webmanifest">
 </head>
-
 <body>
-
-<nav>
-    <button id="login-button">Login</button>
-    <button id="logout-button">Logout</button>
-    <span id="user-greeting">Hello! You have not logged in yet.</span>
-</nav>
-
-<h1>Football Shot Analysis</h1>
-<p>Click anywhere on the pitch to record a shot.</p>
-
-<!-- Team Selector -->
-<div id="team-selector">
-    <label for="teamOutcome">Select Team:</label>
-    <select id="teamOutcome">
-        <option value="team">Your Team</option>
-        <option value="opponent">Opponent</option>
-    </select>
-</div>
-
-<!-- Shot Type Selector -->
-<div id="shot-type">
-    <label for="shotOutcome">Select Shot Outcome:</label>
-    <select id="shotOutcome">
-        <option value="on-target">On Target</option>
-        <option value="blocked">Blocked</option>
-        <option value="off-target">Off Target</option>
-    </select>
-</div>
-
-<!-- Is Header Selector -->
-<div id="headerButton">
-    <label for="isHeader">Is Header?</label>
-    <select id="isHeader">
-        <option value="none">No</option>
-        <option value="header">Yes</option>
-    </select>
-</div>
-
-<!-- Action Type Selector -->
-<div id="action-type">
-    <label for="actionOutcome">Select Action:</label>
-    <select id="actionOutcome">
-        <option value="none">None</option>
-        <option value="assist">Assist</option>
-        <option value="dribble">Dribble</option>
-    </select>
-</div>
-
-<div id="football-pitch"></div>
-<button id="undo-action">Undo</button>
-<button id="finish-button">Finish</button>
-<a id="download-link" href="#" download="shot_map.png">Download Shot Map</a>
-<button id="download-json">Download Shot Data as JSON</button>
-<button id="show-stats">Show Match Stats</button>
-<div id="stats-root"></div>
-<canvas id="shot-map-canvas" width="800" height="500" style="display:none;"></canvas>
-
-<script type="module" src="app.jsx"></script> <!-- Link to JavaScript -->
+    <div id="root"></div>
+    <script type="module" src="/main.jsx"></script>
 </body>
 </html>
