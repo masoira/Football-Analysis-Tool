@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { createClient } from '@supabase/supabase-js'
 import ActionOptions from './components/ActionOptions.jsx';
-import ShotMarker from './components/ShotMarker'
 import Arrow from './components/Arrow'
+import MatchSelector from './components/MatchSelector';
+import ShotMarker from './components/ShotMarker'
 import StatsTable from './components/StatsTable'
 import { calculateXG } from './utils/expected_goals.js';
 import { getStatsFromActions } from './utils/stats.js';
@@ -105,13 +106,15 @@ const App = () => {
   return (
     <>
       <nav>
-        <button onClick={handleLogin}>Login</button>
+      <button onClick={handleLogin}>Login</button>
         <button onClick={handleLogout}>Logout</button>
         <span>Hello {user ? user.email : 'You have not logged in yet.'}</span>
       </nav>
 
       <h1>Football Shot Analysis</h1>
       <p>Click anywhere on the pitch to record a shot.</p>
+
+      <MatchSelector supabase={supabase} />
 
       <ActionOptions
       teamType={teamType} setTeamType={setTeamType}
