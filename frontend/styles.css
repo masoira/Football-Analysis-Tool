@@ -105,3 +105,45 @@ table {
 #download-link:hover {
     background-color: var(--accent);
 }
+
+.match-upload-form {
+  background-color: var(--accent);
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px 0;
+  max-width: 400px;
+}
+
+.match-upload-form div {
+  margin-bottom: 15px;
+}
+
+.match-upload-form label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--text);
+}
+
+.match-upload-form input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--primary);
+  border-radius: 4px;
+  background-color: var(--surface);
+}
+
+.match-upload-form button {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.error-message {
+  color: var(--accent-red);
+  margin-bottom: 10px;
+}
+
+.success-message {
+  color: var(--primary-light);
+  margin-bottom: 10px;
+  font-weight: bold;
+}

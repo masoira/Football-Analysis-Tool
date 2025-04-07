@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { supabase } from '../utils/supabaseClient.js';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-const MatchSelector = ({ onSelectMatch }) => {
+const MatchSelector = forwardRef(({ onSelectMatch }, ref) => {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
@@ -41,14 +41,19 @@ const MatchSelector = ({ onSelectMatch }) => {
     onSelectMatch?.(selectedMatch);
   };
 
-  // Load matches when component mounts
+  // Load matches when component mounts and when refreshTrigger changes
   useEffect(() => {
     loadMatches();
   }, []);
 
+  // Expose refresh function to parent
+  useImperativeHandle(ref, () => ({
+    refresh: loadMatches
+  }));
+
   return (
     <div className="match-selector">
-      {errorMsg && <div className="error-message">Error: {errorMsg}</div>}
+      {errorMsg && <div className="error-message">{errorMsg}</div>}
       {loading && <div>Loading matches...</div>}
       
       {!loading && !errorMsg && matches.length === 0 && (
@@ -60,7 +65,8 @@ const MatchSelector = ({ onSelectMatch }) => {
         onChange={handleMatchChange}
         disabled={loading}
       >
-        <option value="">Select a match</option>
+        <option value="">New Match</option>
+        <option value="existing" disabled>───────────</option>
         {matches.map((match) => (
           <option key={match.match_id} value={match.match_id}>
             {match.match_name}
@@ -69,6 +75,6 @@ const MatchSelector = ({ onSelectMatch }) => {
       </select>
     </div>
   );
-};
+});
 
 export default MatchSelector;

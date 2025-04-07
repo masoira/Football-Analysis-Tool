@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ActionOptions from './components/ActionOptions.jsx';
 import Arrow from './components/Arrow'
 import MatchSelector from './components/MatchSelector';
 import ShotMarker from './components/ShotMarker'
 import StatsTable from './components/StatsTable'
+import MatchUploadForm from './components/MatchUploadForm';
 import { supabase } from './utils/supabaseClient.js';
 import { calculateXG } from './utils/expectedGoals.js';
 import { getStatsFromActions } from './utils/stats.js';
@@ -20,6 +21,7 @@ const App = () => {
   const [actionType, setActionType] = useState('none');
   const [currentAction, setCurrentAction] = useState(null);
   const [selectedMatch, setSelectedMatch] = useState(null);
+  const matchSelectorRef = useRef(null);
 
   // Supabase Auth stuff
   const supabaseRedirectUrl = import.meta.env.VITE_SUPABASE_REDIRECT_URL
@@ -61,7 +63,7 @@ const App = () => {
     }
 
     setActions(transformMatchActions(match));
-    setSelectedMatch(match.match_id);
+    setSelectedMatch(match);
   };
 
   // Pitch and Actions related code starts
@@ -115,6 +117,14 @@ const App = () => {
     document.body.removeChild(downloadLink);
   };
 
+  const handleUploadSuccess = () => {
+    // Clear current actions
+    setActions([]);
+    setSelectedMatch(null);
+    // Refresh the match list
+    matchSelectorRef.current?.refresh();
+  };
+
   return (
     <>
       <nav>
@@ -126,7 +136,7 @@ const App = () => {
       <h1>Football Shot Analysis</h1>
       <p>Click anywhere on the pitch to record a shot.</p>
 
-      <MatchSelector onSelectMatch={handleMatchSelect} />
+      <MatchSelector ref={matchSelectorRef} onSelectMatch={handleMatchSelect} />
 
       <ActionOptions
       teamType={teamType} setTeamType={setTeamType}
@@ -149,6 +159,12 @@ const App = () => {
       <button id="show-stats" onClick={() => setShowStats(!showStats)}>Show Match Stats</button>
 
       {showStats && <StatsTable data={getStatsFromActions(actions)} />}
+
+      <MatchUploadForm 
+        actions={actions} 
+        onUploadSuccess={handleUploadSuccess}
+        selectedMatch={selectedMatch} 
+      />
     </>
   );
 };
