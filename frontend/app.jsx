@@ -7,6 +7,7 @@ import StatsTable from './components/StatsTable'
 import { supabase } from './utils/supabaseClient.js';
 import { calculateXG } from './utils/expectedGoals.js';
 import { getStatsFromActions } from './utils/stats.js';
+import { transformMatchActions } from './utils/matchTransforms.js';
 import './styles.css';
 
 // Main App Component
@@ -18,6 +19,7 @@ const App = () => {
   const [isHeader, setIsHeader] = useState(false);
   const [actionType, setActionType] = useState('none');
   const [currentAction, setCurrentAction] = useState(null);
+  const [selectedMatch, setSelectedMatch] = useState(null);
 
   // Supabase Auth stuff
   const supabaseRedirectUrl = import.meta.env.VITE_SUPABASE_REDIRECT_URL
@@ -48,6 +50,18 @@ const App = () => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setUser(null);
+  };
+
+  // Function to handle match selection
+  const handleMatchSelect = (match) => {
+    if (!match) {
+      setActions([]);
+      setSelectedMatch(null);
+      return;
+    }
+
+    setActions(transformMatchActions(match));
+    setSelectedMatch(match.match_id);
   };
 
   // Pitch and Actions related code starts
@@ -112,7 +126,7 @@ const App = () => {
       <h1>Football Shot Analysis</h1>
       <p>Click anywhere on the pitch to record a shot.</p>
 
-      <MatchSelector />
+      <MatchSelector onSelectMatch={handleMatchSelect} />
 
       <ActionOptions
       teamType={teamType} setTeamType={setTeamType}

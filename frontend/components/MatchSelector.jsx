@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../utils/supabaseClient.js';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
@@ -7,6 +7,7 @@ const MatchSelector = ({ onSelectMatch }) => {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [selectedMatchId, setSelectedMatchId] = useState('');
 
   const loadMatches = async () => {
     setLoading(true);
@@ -33,24 +34,39 @@ const MatchSelector = ({ onSelectMatch }) => {
     }
   };
 
-  return (
-    <div>
-    {errorMsg && <div>Error: {errorMsg}</div>}
-    <button onClick={loadMatches} disabled={loading}>
-        {loading ? 'Loading...' : 'Load Matches'}
-    </button>
+  const handleMatchChange = (e) => {
+    const matchId = e.target.value;
+    setSelectedMatchId(matchId);
+    const selectedMatch = matches.find(match => match.match_id === matchId);
+    onSelectMatch?.(selectedMatch);
+  };
 
-    {!loading && !errorMsg && matches.length === 0 && (
-    <div>No matches found.</div>
-    )}
-    <select onChange={(e) => onSelectMatch?.(e.target.value)}>
-    <option value="">Select a match</option>
-    {matches.map((match) => (
-        <option key={match.match_id} value={match.match_id}>
-        {match.match_name}
-        </option>
-    ))}
-    </select>
+  // Load matches when component mounts
+  useEffect(() => {
+    loadMatches();
+  }, []);
+
+  return (
+    <div className="match-selector">
+      {errorMsg && <div className="error-message">Error: {errorMsg}</div>}
+      {loading && <div>Loading matches...</div>}
+      
+      {!loading && !errorMsg && matches.length === 0 && (
+        <div>No matches found.</div>
+      )}
+      
+      <select 
+        value={selectedMatchId}
+        onChange={handleMatchChange}
+        disabled={loading}
+      >
+        <option value="">Select a match</option>
+        {matches.map((match) => (
+          <option key={match.match_id} value={match.match_id}>
+            {match.match_name}
+          </option>
+        ))}
+      </select>
     </div>
   );
 };
